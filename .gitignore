@@ -1,0 +1,16 @@
+# settings
+.idea/
+.vscode/*
+!.vscode/settings.json
+
+# python cache
+__pycache__/
+*.egg-info
+build/
+dist/
+
+# data
+data/
+
+# logs
+logs/

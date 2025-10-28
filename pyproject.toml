@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ImageClassification"
+version = "0.1.0"
+description = "A Python project for image classification tasks."
+authors = [
+    { name="MUGE_TONG", email="here5320@gmail.com" }
+]
+license = { file="LICENSE" }
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "python-box>=7.3.2",
+    "pyyaml>=6.0.2",
+    "pandas",
+    "tqdm>=4.67.1",
+    "tensorboard>=2.19.0",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
