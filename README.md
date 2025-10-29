@@ -36,7 +36,7 @@ make eval resnet
 
 ```
 
-## 在CIFAR00数据集上训练和验证
+## 在CIFAR100数据集上训练和验证
 
 ```bash
 make run data_aug -- --dataset_name CIFAR100 --dconf.data_dir ./data/cifar100 --mconf.num_classes 100 --num_epochs 50
@@ -46,3 +46,4 @@ make eval data_aug -- --dataset_name CIFAR100 --dconf.data_dir ./data/cifar100 -
 
 ## 致谢
 - [上海交通大学](https://www.sjtu.edu.cn/)
+
