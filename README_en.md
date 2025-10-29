@@ -15,3 +15,15 @@ cd ImageClassification
 pip install -r requirements.txt
 ```
 > We strongly recommend using a virtual environment to manage dependencies.
+> You may need to install `Pytorch` seperately before you run this project.
+
+We use `Make` to manage the code running.
+
+```bash
+make run
+```
+For RTX4090, it is reasonable to finish the training in one minute.
+
+## Thanks
+- [Shanghai Jiao Tong University](https://www.sjtu.edu.cn/)
+

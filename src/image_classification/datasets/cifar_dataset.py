@@ -51,7 +51,7 @@ class CIFAR10Dataset(datasets.CIFAR10):
         img, label =  super().__getitem__(index)
         inputs = {}
 
-        if self.allow_flip and random.random() > 0.5:
+        if self.allow_flip:
             inputs['img'] = self.flip_transform(img)
         else:
             inputs['img'] = self.base_transform(img)

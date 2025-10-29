@@ -70,7 +70,7 @@ class Trainer:
         """Load model weights from the specified path."""
         if path is None: return
         logging.info(f"Loading weights from {path}...")
-        model_meta = torch.load(path, map_location='cpu')
+        model_meta = torch.load(path, map_location='cpu', weights_only=False)
         self.model.load_state_dict(model_meta['state_dict'])
         self.epoch_start = model_meta['epoch']
         self.batch_start = model_meta['batch'] - 1
@@ -120,7 +120,7 @@ class Trainer:
 
             # Logging
             if (batch_idx + 1) % self.opt.log_freq == 0:
-                self.log_progress(batch_idx + 1, loss.item())
+                self.log_progress(batch_idx + 1, loss.detach().item())
                 self.log('train', inputs, outputs, loss, targets)
 
                 self.validate()
@@ -149,7 +149,7 @@ class Trainer:
             outputs = self.model(inputs['img'])
             loss = nn.functional.cross_entropy(outputs, targets)
 
-        self.log('val', inputs, outputs, loss, targets)
+        self.log('val', inputs, outputs, loss.detach().item(), targets)
         self.model.train()
 
 
@@ -181,7 +181,35 @@ class Trainer:
             step: The current training step.
         """
         writer = self.writers[phase]
-        writer.add_scalar('loss', loss.item(), self.batch_step)
+        writer.add_scalar('loss', loss, self.batch_step)
         _, preds = torch.max(outputs, 1)
         acc = torch.sum(preds == targets).item() / targets.size(0)
         writer.add_scalar('accuracy', acc, self.batch_step)
+
+
+    def eval(self):
+        """Run evaluation on the validation set."""
+        logging.info("Starting evaluation...")
+        self.model.eval()
+        total_loss = 0.0
+        total_correct = 0
+        total_samples = 0
+
+        with torch.no_grad():
+            for inputs, targets in self.val_loader:
+                # Move data to device
+                inputs = {k: v.to(self.device) for k, v in inputs.items()}
+                targets = targets.to(self.device)
+
+                outputs = self.model(inputs['img'])
+                loss = nn.functional.cross_entropy(outputs, targets)
+
+                total_loss += loss.item() * targets.size(0)
+                _, preds = torch.max(outputs, 1)
+                total_correct += torch.sum(preds == targets).item()
+                total_samples += targets.size(0)
+
+        avg_loss = total_loss / total_samples
+        accuracy = total_correct / total_samples
+
+        logging.info(f"Evaluation completed. Avg Loss: {avg_loss:.5f}, Accuracy: {accuracy:.4f}")
