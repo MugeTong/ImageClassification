@@ -21,7 +21,28 @@ pip install .
 ```bash
 make run
 ```
-对于一张4090显卡来讲，合理的训练时间应该在一分钟左右。
+对于一张4090显卡来讲，合理的基准模型训练时间应该在一分钟左右。改进模型训练在3分钟左右。
+
+### 训练和验证基准模型
+```bash
+make run
+make eval
+```
+
+### 训练和验证改进模型
+```bash
+make run resnet
+make eval resnet
+
+```
+
+## 在CIFAR00数据集上训练和验证
+
+```bash
+make run data_aug -- --dataset_name CIFAR100 --dconf.data_dir ./data/cifar100 --mconf.num_classes 100 --num_epochs 50
+
+make eval data_aug -- --dataset_name CIFAR100 --dconf.data_dir ./data/cifar100 --mconf.num_classes 100 --weights_path ./logs/data_aug/checkpoint_epoch_49.pth
+```
 
 ## 致谢
 - [上海交通大学](https://www.sjtu.edu.cn/)

@@ -41,25 +41,37 @@ class BenchmarkClassifier(nn.Module):
         self.avg_pool = nn.AvgPool2d(kernel_size=8)
         self.act = nn.ReLU(inplace=True) if config.act_func == 'relu' else nn.GELU()
 
+        self.side1 = nn.AvgPool2d(2, 2) if config.use_res else nn.Identity()
+        self.side2 = nn.Conv2d(64, 128, 1, 2) if config.use_res else nn.Identity()
+
 
         self.fc1 = nn.Linear(128, 64)
         self.fc2 = nn.Linear(64, self.config.num_classes)
         self.bn = nn.BatchNorm1d(64)
+        self.bn2d1 = nn.BatchNorm2d(64) if config.use_res else nn.Identity()
+        self.bn2d2 = nn.BatchNorm2d(128) if config.use_res else nn.Identity()
         self.conv_dropout = nn.Dropout2d(config.conv_dropout) if config.conv_dropout > 0 else nn.Identity()
         self.fc_dropout = nn.Dropout(config.fc_dropout) if config.fc_dropout > 0 else nn.Identity()
 
+        self.apply(self._init_weights)
+
+
+    def _init_weights(self, m):
+        if isinstance(m, (nn.BatchNorm2d, nn.BatchNorm1d)):
+            nn.init.constant_(m.weight, 1.0)
+            nn.init.constant_(m.bias, 0.0)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         x = self.act(self.conv1(x))
         x = self.conv_dropout(x)
 
         if self.config.use_res:
-            x += self.act(self.conv3(self.act(self.conv2(x))))
-            x = self.fc_dropout(x)
-            x += self.act(self.conv5(self.act(self.conv4(x))))
+            x = self.bn2d1(self.side1(x)) + self.act(self.conv3(self.act(self.conv2(x))))
+            x = self.conv_dropout(x)
+            x = self.bn2d2(self.side2(x)) + self.act(self.conv5(self.act(self.conv4(x))))
         else:
             x = self.act(self.conv3(self.act(self.conv2(x))))
-            x = self.fc_dropout(x)
+            x = self.conv_dropout(x)
             x = self.act(self.conv5(self.act(self.conv4(x))))
         # Average the image to point.
         x = self.avg_pool(x)

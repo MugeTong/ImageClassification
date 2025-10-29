@@ -22,8 +22,29 @@ We use `Make` to manage the code running.
 ```bash
 make run
 ```
-For RTX4090, it is reasonable to finish the training in one minute.
+For RTX4090, it is reasonable to finish the basic model training in one minute. It costs three minutes to train one improved model.
+
+### Train and validate the basic model
+```bash
+make run
+make eval
+```
+
+### Train and validate the improved model
+```bash
+make run resnet
+make eval resnet
+
+```
+
+## Train and validate on the CIFAR100 dataset
+
+```bash
+make run data_aug -- --dataset_name CIFAR100 --dconf.data_dir ./data/cifar100 --mconf.num_classes 100 --num_epochs 50
+
+make eval data_aug -- --dataset_name CIFAR100 --dconf.data_dir ./data/cifar100 --mconf.num_classes 100 --weights_path ./logs/data_aug/checkpoint_epoch_49.pth
+```
+
 
 ## Thanks
 - [Shanghai Jiao Tong University](https://www.sjtu.edu.cn/)
-

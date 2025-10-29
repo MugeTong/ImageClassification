@@ -17,12 +17,22 @@ mconf:
   height: 32
   width: 32
   num_classes: 10
+  act_func: gelu
+  use_res: false
+  conv_dropout: 0
+  fc_dropout: 0
 
   lr: 0.001
   betas: [0.9, 0.999]
   weight_decay: 0.01
-
+  min_lr: 1.0e-5
+  warmup_steps: 3
 
 dataset_name: CIFAR10
 dconf:
   data_dir: ./data/cifar10
+  download: true
+  allow_flip: false
+  allow_rotation: false
+  allow_aug: false
+  allow_crop: false

@@ -1,11 +1,11 @@
-name: dropout
+name: resnet
 seed: 42
 weights_path: null
 no_cuda: false
 
 batch_size: 64
 num_workers: 4
-num_epochs: 20
+num_epochs: 30
 
 log_dir: ./logs
 log_freq: 100
@@ -17,14 +17,22 @@ mconf:
   height: 32
   width: 32
   num_classes: 10
-  conv_dropout: 0.3
-  fc_dropout: 0.3
+  act_func: gelu
+  use_res: true
+  conv_dropout: 0.1
+  fc_dropout: 0.1
 
   lr: 0.001
   betas: [0.9, 0.999]
   weight_decay: 0.01
-
+  min_lr: 1.0e-5
+  warmup_steps: 3
 
 dataset_name: CIFAR10
 dconf:
   data_dir: ./data/cifar10
+  download: true
+  allow_flip: true
+  allow_rotation: true
+  allow_aug: true
+  allow_crop: true
